@@ -1,6 +1,6 @@
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 import numpy as np
-from connect import data_perak as data
+from ambilData import data_perak as data
 import datetime
 import pandas as pd
 import matplotlib.pyplot as  plt

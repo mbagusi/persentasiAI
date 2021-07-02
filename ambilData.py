@@ -1,6 +1,6 @@
 import psycopg2
 import pandas as pd
-from setting import config
+from konnekServer import config
 
 # Obtain the configuration parameters
 params = config()

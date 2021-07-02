@@ -1,7 +1,7 @@
 # Medtode Lasso
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 import numpy as np
-from connect import data_perak as data
+from ambilData import data_perak as data
 import datetime
 import pandas as pd
 import matplotlib.pyplot as  plt
@@ -9,7 +9,7 @@ import matplotlib.pyplot as  plt
 besok = datetime.date.today() + datetime.timedelta(days=1)
 
 date = data["date"]
-date_predict = np.array([str(str(besok.year)+'-0'+str(besok.month)+'-'+str(besok.day))])
+date_predict = np.array([str(str(besok.year)+'-'+str(besok.month)+'-'+str(besok.day))])
 price = data["price"]
 
 date.head(14)
@@ -49,7 +49,7 @@ las_predict, las_pred_future = prediction(las)
 
 plt.scatter(to_datetime(date), y, color='green')
 plt.plot(to_datetime(date), las_predict)
-plt.plot(to_datetime_pred(date_predict), las_pred_future)
+plt.scatter(to_datetime_pred(date_predict), las_pred_future)
 plt.tick_params(labelrotation=30)
 plt.ylabel("Dalam Rupiah")
 plt.xlabel("Tanggal (jangka 14 hari)")
@@ -60,5 +60,5 @@ plt.show()
 print("Pediksi Harga Perak menggunakan metode Lasso")
 print("Intercept = {}".format(intercept))
 print("Coeffisien = {}".format(coef))
-print("Prediksi Besoknya = {}".format(lin_pred_future))
+print("Prediksi Besoknya = {}".format(las_pred_future))
 
