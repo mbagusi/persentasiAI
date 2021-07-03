@@ -1,64 +1,68 @@
-# Medtode Lasso
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 import numpy as np
-from ambilData import data_perak as data
-import datetime
 import pandas as pd
-import matplotlib.pyplot as  plt
-
+import matplotlib.pyplot as plt
+import datetime
+from ambilData import data_perak as data
 besok = datetime.date.today() + datetime.timedelta(days=1)
+print(besok)
 
-date = data["date"]
-date_predict = np.array([str(str(besok.year)+'-'+str(besok.month)+'-'+str(besok.day))])
-price = data["price"]
+tanggal_besoknya = np.array([str(str(besok.year)+'-'+str(besok.month)+'-'+str(besok.day))]) #macam ni la misalnye(2021-07-09)
+tanggal = data["date"]
+harga = data["price"]
+print(tanggal_besoknya)
 
-date.head(14)
+def merubah_ke_tipe_data_datetime(tanggal):
+    tipe_data_dataframe = pd.DataFrame({'tanggal' : tanggal})
+    tipe_data_datetime = pd.to_datetime(tipe_data_dataframe.tanggal)
+    return tipe_data_datetime
 
-price.head(14)
+def merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya):
+    tipe_data_dataframe = pd.DataFrame({'tanggal_besoknya' : tanggal_besoknya})
+    tipe_data_datetime = pd.to_datetime(tipe_data_dataframe.tanggal_besoknya)
+    return tipe_data_datetime
 
-def to_datetime(date):
-    df = pd.DataFrame({'date': date})
-    df.date = pd.to_datetime(df.date)
-    return df.date
+uji_tanggal = merubah_ke_tipe_data_datetime(tanggal=tanggal)
+uji_tanggal_besoknya = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya=tanggal_besoknya)
 
-def to_datetime_pred(date_predict):
-    dfe = pd.DataFrame({'prediksi': date_predict})
-    dfe.prediksi = pd.to_datetime(dfe.prediksi)
-    return dfe.prediksi
+print(uji_tanggal)
+print(uji_tanggal_besoknya)
 
-x = to_datetime(date).values.astype(float).reshape(-1, 1)
-x_predict = to_datetime_pred(date_predict).values.astype(float).reshape(-1, 1)
-y = price.values.reshape(-1, 1)
+#selanjutnya kita menginisiasi x train dan y train
+x = merubah_ke_tipe_data_datetime(tanggal).values.astype(float).reshape(-1, 1)
+print(x)
+y = harga.values.reshape(-1, 1)
+x_predict = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya).values.astype(float).reshape(-1, 1)
+print(x_predict)
 
+#selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan linear regression
+lasso = Lasso(alpha=0.01, tol=1, normalize=True)
+lasso.fit(x, y)
 
-las = Lasso(alpha=0.01, tol=1, normalize=True)
-las.fit(x, y)
-
-def coef_intercept(las):
-    coef = las.coef_
-    intercept = las.intercept_
+def coef_dan_intercept(lasso):
+    coef = lasso.coef_
+    intercept = lasso.intercept_
     return coef, intercept
 
-def prediction(las):
-    las_predict = las.predict(x)
-    las_pred_future = las.predict(x_predict)
-    return las_predict, las_pred_future
+def prediksi(lasso, x, x_predict):
+    linear_predict = lasso.predict(x)
+    linear_predict_besoknya = lasso.predict(x_predict)
+    return linear_predict, linear_predict_besoknya
 
-coef, intercept = coef_intercept(las)
-las_predict, las_pred_future = prediction(las)
+uji_klinis_coef, uji_klinis_intercept = coef_dan_intercept(lasso)
+uji_klinis_linear_predict, uji_klinis_linear_predict_besoknya = prediksi(lasso, x, x_predict)
 
-plt.scatter(to_datetime(date), y, color='green')
-plt.plot(to_datetime(date), las_predict)
-plt.scatter(to_datetime_pred(date_predict), las_pred_future)
-plt.tick_params(labelrotation=30)
-plt.ylabel("Dalam Rupiah")
-plt.xlabel("Tanggal (jangka 14 hari)")
-plt.legend(['Garis Lasso'])
-plt.title("Grafik Lasso Prediksi Harga Perak")
+print("coef = " + str(uji_klinis_coef))
+print("intecept = " + str(uji_klinis_intercept))
+pred = uji_klinis_linear_predict
+print("prediksi besoknya = " + str(uji_klinis_linear_predict_besoknya))
+
+plt.scatter(merubah_ke_tipe_data_datetime(tanggal), harga, color="green")
+plt.plot(merubah_ke_tipe_data_datetime(tanggal), uji_klinis_linear_predict, color="red")
+plt.plot(merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya), uji_klinis_linear_predict_besoknya)
+plt.xlabel("Tanggal(interval 2minggu)")
+plt.ylabel("Harga")
+plt.title("prediksi harga perak menggunakan metode lasso")
+plt.legend(["Garis linear"])
+plt.tick_params(labelrotation=10)
 plt.show()
-
-print("Pediksi Harga Perak menggunakan metode Lasso")
-print("Intercept = {}".format(intercept))
-print("Coeffisien = {}".format(coef))
-print("Prediksi Besoknya = {}".format(las_pred_future))
-
