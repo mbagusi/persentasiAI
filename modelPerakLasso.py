@@ -35,7 +35,7 @@ y = harga.values.reshape(-1, 1)
 x_predict = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya).values.astype(float).reshape(-1, 1)
 print(x_predict)
 
-#selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan linear regression
+#selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan lasso
 lasso = Lasso(alpha=0.01, tol=1, normalize=True)
 lasso.fit(x, y)
 
