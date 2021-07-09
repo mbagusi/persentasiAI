@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
-from ambilData import data_perak as data
+from ambilData import data_emas as data
 besok = datetime.date.today() + datetime.timedelta(days=1)
 print(besok)
 
@@ -35,22 +35,22 @@ y = harga.values.reshape(-1, 1)
 x_predict = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya).values.astype(float).reshape(-1, 1)
 print(x_predict)
 
-#selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan ridge regression
-linear = LinearRegression()
-linear.fit(x, y)
+#selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan linear regression
+ridge = Ridge(alpha=0.01)
+ridge.fit(x, y)
 
-def coef_dan_intercept(linear):
-    coef = linear.coef_
-    intercept = linear.intercept_
+def coef_dan_intercept(ridge):
+    coef = ridge.coef_
+    intercept = ridge.intercept_
     return coef, intercept
 
-def prediksi(linear, x, x_predict):
-    linear_predict = linear.predict(x)
-    linear_predict_besoknya = linear.predict(x_predict)
+def prediksi(ridge, x, x_predict):
+    linear_predict = ridge.predict(x)
+    linear_predict_besoknya = ridge.predict(x_predict)
     return linear_predict, linear_predict_besoknya
 
-uji_klinis_coef, uji_klinis_intercept = coef_dan_intercept(linear)
-uji_klinis_linear_predict, uji_klinis_linear_predict_besoknya = prediksi(linear, x, x_predict)
+uji_klinis_coef, uji_klinis_intercept = coef_dan_intercept(ridge)
+uji_klinis_linear_predict, uji_klinis_linear_predict_besoknya = prediksi(ridge, x, x_predict)
 
 print("coef = " + str(uji_klinis_coef))
 print("intecept = " + str(uji_klinis_intercept))
@@ -62,7 +62,7 @@ plt.plot(merubah_ke_tipe_data_datetime(tanggal), uji_klinis_linear_predict, colo
 plt.plot(merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya), uji_klinis_linear_predict_besoknya)
 plt.xlabel("Tanggal(interval 2minggu)")
 plt.ylabel("Harga")
-plt.title("prediksi harga perak menggunakan metode linear regression")
+plt.title("prediksi harga emas menggunakan metode ridge regression")
 plt.legend(["Garis linear"])
 plt.tick_params(labelrotation=10)
 plt.show()

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
-from ambilData import data_perak as data
+from ambilData import data_emas as data
 besok = datetime.date.today() + datetime.timedelta(days=1)
 print(besok)
 
@@ -62,7 +62,7 @@ plt.plot(merubah_ke_tipe_data_datetime(tanggal), uji_klinis_linear_predict, colo
 plt.plot(merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya), uji_klinis_linear_predict_besoknya)
 plt.xlabel("Tanggal(interval 2minggu)")
 plt.ylabel("Harga")
-plt.title("prediksi harga perak menggunakan metode lasso")
+plt.title("prediksi harga emas menggunakan metode lasso")
 plt.legend(["Garis linear"])
 plt.tick_params(labelrotation=10)
 plt.show()
