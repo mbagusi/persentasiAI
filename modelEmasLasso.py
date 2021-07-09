@@ -5,12 +5,10 @@ import matplotlib.pyplot as plt
 import datetime
 from ambilData import data_emas as data
 besok = datetime.date.today() + datetime.timedelta(days=1)
-print(besok)
 
 tanggal_besoknya = np.array([str(str(besok.year)+'-'+str(besok.month)+'-'+str(besok.day))]) #macam ni la misalnye(2021-07-09)
 tanggal = data["date"]
 harga = data["price"]
-print(tanggal_besoknya)
 
 def merubah_ke_tipe_data_datetime(tanggal):
     tipe_data_dataframe = pd.DataFrame({'tanggal' : tanggal})
@@ -25,15 +23,10 @@ def merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya):
 uji_tanggal = merubah_ke_tipe_data_datetime(tanggal=tanggal)
 uji_tanggal_besoknya = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya=tanggal_besoknya)
 
-print(uji_tanggal)
-print(uji_tanggal_besoknya)
-
 #selanjutnya kita menginisiasi x train dan y train
-x = merubah_ke_tipe_data_datetime(tanggal).values.astype(float).reshape(-1, 1)
-print(x)
+x = uji_tanggal.values.astype(float).reshape(-1, 1)
 y = harga.values.reshape(-1, 1)
-x_predict = merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya).values.astype(float).reshape(-1, 1)
-print(x_predict)
+x_predict = uji_tanggal_besoknya.values.astype(float).reshape(-1, 1)
 
 #selanjutnya menginisasi fungsi machine learning, yaitu disini menggunakan lasso
 lasso = Lasso(alpha=0.01, tol=1, normalize=True)
@@ -45,24 +38,24 @@ def coef_dan_intercept(lasso):
     return coef, intercept
 
 def prediksi(lasso, x, x_predict):
-    linear_predict = lasso.predict(x)
-    linear_predict_besoknya = lasso.predict(x_predict)
-    return linear_predict, linear_predict_besoknya
+    lasso_predict = lasso.predict(x)
+    lasso_predict_besoknya = lasso.predict(x_predict)
+    return lasso_predict, lasso_predict_besoknya
 
 uji_klinis_coef, uji_klinis_intercept = coef_dan_intercept(lasso)
-uji_klinis_linear_predict, uji_klinis_linear_predict_besoknya = prediksi(lasso, x, x_predict)
+uji_klinis_lasso_predict, uji_klinis_linear_predict_besoknya = prediksi(lasso, x, x_predict)
 
 print("coef = " + str(uji_klinis_coef))
 print("intecept = " + str(uji_klinis_intercept))
-pred = uji_klinis_linear_predict
+pred = uji_klinis_lasso_predict
 print("prediksi besoknya = " + str(uji_klinis_linear_predict_besoknya))
 
-plt.scatter(merubah_ke_tipe_data_datetime(tanggal), harga, color="green")
-plt.plot(merubah_ke_tipe_data_datetime(tanggal), uji_klinis_linear_predict, color="red")
-plt.plot(merubah_ke_tipe_data_datetime_besoknya(tanggal_besoknya), uji_klinis_linear_predict_besoknya)
+plt.scatter(uji_tanggal, harga, color="green")
+plt.plot(uji_tanggal, uji_klinis_lasso_predict, color="red")
+plt.plot(uji_tanggal_besoknya, uji_klinis_linear_predict_besoknya)
 plt.xlabel("Tanggal(interval 2minggu)")
 plt.ylabel("Harga")
 plt.title("prediksi harga emas menggunakan metode lasso")
-plt.legend(["Garis linear"])
+plt.legend(["Garis lasso"])
 plt.tick_params(labelrotation=10)
 plt.show()
